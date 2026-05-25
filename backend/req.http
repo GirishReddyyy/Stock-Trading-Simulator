@@ -63,6 +63,15 @@ Content-Type: application/json
     "password":"123456"
 }
 
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email":"girish@test.com",
+    "password":"123456"
+}
+
 
 ### Login
 POST http://localhost:5000/api/auth/login
@@ -87,3 +96,129 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMGQ0ZDI4N
 ### Admin Test
 GET http://localhost:5000/api/test/admin-test
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMGQ0ZDI4NDNiZmE0NTlmYzM1YmYzNSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3NzkzMzU2NjksImV4cCI6MTc3OTQyMjA2OX0.3YreCbDK_QKS0pITzZJJdHpLOcRXLcdCi7j4NumCQz0
+
+### Login Admin
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email":"girish2@test.com",
+    "password":"123456"
+}
+
+
+
+###
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwODMyMCwiZXhwIjoxNzc5Njk0NzIwfQ.zWcC5p_M0RnI7_HJFNiMLrV7pcWTn3Bhapi8BUfb5-s
+
+### Create Stock
+POST http://localhost:5000/api/admin/stocks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwODMyMCwiZXhwIjoxNzc5Njk0NzIwfQ.zWcC5p_M0RnI7_HJFNiMLrV7pcWTn3Bhapi8BUfb5-s
+Content-Type: application/json
+
+{
+    "symbol":"AAPL",
+    "companyName":"Apple Inc",
+    "currentPrice":185,
+    "marketCap":3000000,
+    "sector":"Technology"
+}
+
+### Add Stock
+POST http://localhost:5000/api/admin/stocks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwOTEzNiwiZXhwIjoxNzc5Njk1NTM2fQ.SH9BsLD90HwrA7eUx6GDoO-jBL8vl93asppWp-LhH14
+Content-Type: application/json
+
+{
+    "symbol":"AAPL"
+}
+
+### Get All Stocks
+GET http://localhost:5000/api/admin/stocks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwOTEzNiwiZXhwIjoxNzc5Njk1NTM2fQ.SH9BsLD90HwrA7eUx6GDoO-jBL8vl93asppWp-LhH14
+
+### Get Single Stock
+GET http://localhost:5000/api/admin/stocks/6a12b0a5739604af5ec33eba
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwOTEzNiwiZXhwIjoxNzc5Njk1NTM2fQ.SH9BsLD90HwrA7eUx6GDoO-jBL8vl93asppWp-LhH14
+
+### Update Stock
+PUT http://localhost:5000/api/admin/stocks/6a12b0a5739604af5ec33eba
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwOTEzNiwiZXhwIjoxNzc5Njk1NTM2fQ.SH9BsLD90HwrA7eUx6GDoO-jBL8vl93asppWp-LhH14
+Content-Type: application/json
+
+{
+    "currentPrice": 220,
+    "sector": "Technology"
+}
+
+### Deactivate Stock
+DELETE http://localhost:5000/api/admin/stocks/6a12b0a5739604af5ec33eba
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTYzMTUzNDVhZDI2ZmE0YTljYiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTYwOTEzNiwiZXhwIjoxNzc5Njk1NTM2fQ.SH9BsLD90HwrA7eUx6GDoO-jBL8vl93asppWp-LhH14
+
+
+###
+GET http://localhost:5000/api/market/stocks
+
+
+### Buy Stock
+POST http://localhost:5000/api/trader/buy
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+Content-Type: application/json
+
+{
+    "stockId":"6a12b0a5739604af5ec33eba",
+    "quantity":2
+}
+
+###test portfolio
+
+GET http://localhost:5000/api/trader/portfolio
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+
+###test transaction
+
+GET http://localhost:5000/api/trader/transactions
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+
+### Sell Stock
+POST http://localhost:5000/api/trader/sell
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+Content-Type: application/json
+
+{
+    "stockId":"6a12b0a5739604af5ec33eba",
+    "quantity":1
+}
+
+### Analytics
+GET http://localhost:5000/api/trader/analytics
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+
+
+###
+POST http://localhost:5000/api/trader/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+Content-Type: application/json
+
+{
+    "stockId":"6a12b0a5739604af5ec33eba",
+    "quantity":2,
+    "limitPrice":200,
+    "orderType":"BUY"
+}
+
+###
+POST http://localhost:5000/api/trader/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
+Content-Type: application/json
+
+{
+    "stockId":"6a12b0a5739604af5ec33eba",
+    "quantity":1,
+    "limitPrice":210,
+    "orderType":"BUY"
+}
+
+### Dashboard
+GET http://localhost:5000/api/trader/dashboard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTJhYTU1MTUzNDVhZDI2ZmE0YTljYSIsInJvbGUiOiJ0cmFkZXIiLCJpYXQiOjE3Nzk2MzIyNjAsImV4cCI6MTc3OTcxODY2MH0.k83Ir38IpI0HUZctvKkYb9tlIGxe9DANA35NdMlRXMw
