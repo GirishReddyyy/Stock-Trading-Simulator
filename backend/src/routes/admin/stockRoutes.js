@@ -3,48 +3,48 @@ import protect from "../../middleware/authMiddleware.js";
 import authorize from "../../middleware/roleMiddleware.js";
 
 import {
-    createStock,
-    getAllStocks,
-    getSingleStock,
-    updateStock,
-    deactivateStock
+  createStock,
+  getAllStocks,
+  getSingleStock,
+  updateStock,
+  deactivateStock,
 } from "../../controllers/admin/stockController.js";
 
 const router = express.Router();
 
-router.post(
-    "/stocks",
-    protect,
-    authorize("admin"),
-    createStock
-);
+/**
+ * @route   POST /api/admin/stocks
+ * @desc    Create a new stock
+ * @access  Private/Admin
+ */
+router.post("/stocks", protect, authorize("admin"), createStock);
 
-router.get(
-    "/stocks",
-    protect,
-    authorize("admin"),
-    getAllStocks
-);
+/**
+ * @route   GET /api/admin/stocks
+ * @desc    Get all stocks
+ * @access  Private/Admin
+ */
+router.get("/stocks", protect, authorize("admin"), getAllStocks);
 
-router.get(
-    "/stocks/:id",
-    protect,
-    authorize("admin"),
-    getSingleStock
-);
+/**
+ * @route   GET /api/admin/stocks/:id
+ * @desc    Get a single stock by ID
+ * @access  Private/Admin
+ */
+router.get("/stocks/:id", protect, authorize("admin"), getSingleStock);
 
-router.put(
-    "/stocks/:id",
-    protect,
-    authorize("admin"),
-    updateStock
-);
+/**
+ * @route   PUT /api/admin/stocks/:id
+ * @desc    Update a stock by ID
+ * @access  Private/Admin
+ */
+router.put("/stocks/:id", protect, authorize("admin"), updateStock);
 
-router.delete(
-    "/stocks/:id",
-    protect,
-    authorize("admin"),
-    deactivateStock
-);
+/**
+ * @route   DELETE /api/admin/stocks/:id
+ * @desc    Deactivate a stock by ID (soft delete)
+ * @access  Private/Admin
+ */
+router.delete("/stocks/:id", protect, authorize("admin"), deactivateStock);
 
 export default router;

@@ -1,226 +1,137 @@
-import OrderModel from "../models/OrderModel.js";
-import StockModel from "../models/StockModel.js";
-import UserModel from "../models/UserModel.js";
-import PortfolioModel from "../models/PortfolioModel.js";
-import TransactionModel from "../models/TransactionModel.js";
+import Order from "../models/OrderModel.js";
+import Stock from "../models/StockModel.js";
+import Portfolio from "../models/PortfolioModel.js";
+import Transaction from "../models/TransactionModel.js";
+import User from "../models/UserModel.js";
 
-export const processPendingOrders =
-    async () => {
+const runOrderMatching = async (io) => {
+  try {
+    const pendingOrders = await Order.find({
+      status: "PENDING",
+    })
+      .populate("stock")
+      .populate("user");
 
-        try {
+    for (const order of pendingOrders) {
+      const stock = await Stock.findById(order.stock._id);
 
-            const pendingOrders =
-                await OrderModel.find({
-                    status: "PENDING"
-                });
+      if (!stock) continue;
 
-            for (
-                const order of pendingOrders
-            ) {
+      const marketPrice = stock.currentPrice;
 
-                const stock =
-                    await StockModel.findById(
-                        order.stock
-                    );
+      let shouldExecute = false;
 
-                if (!stock) continue;
+      // BUY ORDER
 
-                const currentPrice =
-                    stock.currentPrice;
+      if (order.orderType === "BUY") {
+        shouldExecute = marketPrice <= order.limitPrice;
+      }
 
-                let shouldExecute =
-                    false;
+      // SELL ORDER
+      else {
+        shouldExecute = marketPrice >= order.limitPrice;
+      }
 
-                if (
-                    order.orderType ===
-                    "BUY"
-                ) {
+      if (!shouldExecute) continue;
 
-                    shouldExecute =
-                        currentPrice <=
-                        order.limitPrice;
+      const total = marketPrice * order.quantity;
 
-                } else {
+      const user = await User.findById(order.user._id);
 
-                    shouldExecute =
-                        currentPrice >=
-                        order.limitPrice;
-                }
+      if (!user) continue;
 
-                if (
-                    !shouldExecute
-                )
-                    continue;
+      // BUY EXECUTION
 
-                const user =
-                    await UserModel.findById(
-                        order.user
-                    );
-
-                let portfolio =
-                    await PortfolioModel.findOne(
-                        {
-                            user:
-                                order.user
-                        }
-                    );
-
-                if (
-                    !portfolio
-                ) {
-                    portfolio =
-                        await PortfolioModel.create(
-                            {
-                                user:
-                                    order.user,
-                                holdings:
-                                    []
-                            }
-                        );
-                }
-
-                const totalAmount =
-                    currentPrice *
-                    order.quantity;
-
-                if (
-                    order.orderType ===
-                    "BUY"
-                ) {
-
-                    if (
-                        user.balance <
-                        totalAmount
-                    )
-                        continue;
-
-                    user.balance -=
-                        totalAmount;
-
-                    const holding =
-                        portfolio.holdings.find(
-                            (
-                                h
-                            ) =>
-                                h.stock.toString() ===
-                                stock._id.toString()
-                        );
-
-                    if (
-                        holding
-                    ) {
-
-                        const totalQty =
-                            holding.quantity +
-                            order.quantity;
-
-                        const totalCost =
-                            (
-                                holding.averageBuyPrice *
-                                holding.quantity
-                            ) +
-                            totalAmount;
-
-                        holding.averageBuyPrice =
-                            totalCost /
-                            totalQty;
-
-                        holding.quantity =
-                            totalQty;
-
-                    } else {
-
-                        portfolio.holdings.push(
-                            {
-                                stock:
-                                    stock._id,
-                                quantity:
-                                    order.quantity,
-                                averageBuyPrice:
-                                    currentPrice
-                            }
-                        );
-                    }
-
-                } else {
-
-                    const holding =
-                        portfolio.holdings.find(
-                            (
-                                h
-                            ) =>
-                                h.stock.toString() ===
-                                stock._id.toString()
-                        );
-
-                    if (
-                        !holding ||
-                        holding.quantity <
-                            order.quantity
-                    )
-                        continue;
-
-                    holding.quantity -=
-                        order.quantity;
-
-                    if (
-                        holding.quantity ===
-                        0
-                    ) {
-                        portfolio.holdings =
-                            portfolio.holdings.filter(
-                                (
-                                    h
-                                ) =>
-                                    h.stock.toString() !==
-                                    stock._id.toString()
-                            );
-                    }
-
-                    user.balance +=
-                        totalAmount;
-                }
-
-                await user.save();
-                await portfolio.save();
-
-                await TransactionModel.create(
-                    {
-                        user:
-                            user._id,
-                        stock:
-                            stock._id,
-                        type:
-                            order.orderType,
-                        quantity:
-                            order.quantity,
-                        price:
-                            currentPrice,
-                        totalAmount
-                    }
-                );
-
-                order.status =
-                    "EXECUTED";
-
-                order.executedPrice =
-                    currentPrice;
-
-                order.executedAt =
-                    new Date();
-
-                await order.save();
-
-                console.log(
-                    `Order Executed: ${order._id}`
-                );
-            }
-
-        } catch (error) {
-
-            console.log(
-                error.message
-            );
-
+      if (order.orderType === "BUY") {
+        if (user.balance < total) {
+          continue;
         }
-    };
+
+        user.balance -= total;
+
+        let portfolio = await Portfolio.findOne({
+          user: user._id,
+          stock: stock._id,
+        });
+
+        if (portfolio) {
+          const totalQty = portfolio.quantity + order.quantity;
+
+          portfolio.averageBuyPrice =
+            (portfolio.averageBuyPrice * portfolio.quantity +
+              marketPrice * order.quantity) /
+            totalQty;
+
+          portfolio.quantity = totalQty;
+
+          await portfolio.save();
+        } else {
+          await Portfolio.create({
+            user: user._id,
+            stock: stock._id,
+            quantity: order.quantity,
+            averageBuyPrice: marketPrice,
+          });
+        }
+      }
+
+      // SELL EXECUTION
+      else {
+        const portfolio = await Portfolio.findOne({
+          user: user._id,
+          stock: stock._id,
+        });
+
+        if (!portfolio || portfolio.quantity < order.quantity) {
+          continue;
+        }
+
+        portfolio.quantity -= order.quantity;
+
+        if (portfolio.quantity === 0) {
+          await Portfolio.deleteOne({
+            _id: portfolio._id,
+          });
+        } else {
+          await portfolio.save();
+        }
+
+        user.balance += total;
+      }
+
+      await user.save();
+
+      order.status = "EXECUTED";
+
+      order.executedPrice = marketPrice;
+
+      await order.save();
+
+      await Transaction.create({
+        user: user._id,
+        stock: stock._id,
+        type: order.orderType,
+        quantity: order.quantity,
+        price: marketPrice,
+      });
+
+      // SOCKET EVENT
+
+      io?.emit("orderExecuted", {
+        orderId: order._id,
+        stock: stock.symbol,
+        type: order.orderType,
+        price: marketPrice,
+        quantity: order.quantity,
+      });
+
+      console.log(
+        `Order Executed: ${order.orderType} ${stock.symbol} @ ${marketPrice}`,
+      );
+    }
+  } catch (error) {
+    console.log("Matching error:", error.message);
+  }
+};
+
+export default runOrderMatching;
