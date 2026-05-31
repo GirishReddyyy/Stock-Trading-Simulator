@@ -1,86 +1,103 @@
-# Stock Trading Simulator
+# 📈 Stock Trading Simulator
 
-A full-stack web application that simulates a live stock market trading environment. Users can register, log in, view live market data, and execute trades in real-time.
+[![Frontend Setup](https://img.shields.io/badge/Frontend-React%20%7C%20Vite-blue?logo=react&logoColor=white)](https://stock-trading-simulator-kappa.vercel.app)
+[![Backend Setup](https://img.shields.io/badge/Backend-Express%20%7C%20Node.js-green?logo=nodedotjs&logoColor=white)](https://stock-trading-simulator-0tby.onrender.com)
+[![Database](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)]()
 
-## Tech Stack
+A full-stack, real-time web application that simulates a live stock market environment. Users can securely register, view live market data streams, and execute trades instantly. 
 
-The application is split into two main components:
+### 🚀 Live Demos
+- **Live Platform:** [https://stock-trading-simulator-kappa.vercel.app](https://stock-trading-simulator-kappa.vercel.app)
+- **API Endpoint:** [https://stock-trading-simulator-0tby.onrender.com](https://stock-trading-simulator-0tby.onrender.com)
 
-- **Backend:** Node.js, Express, MongoDB, and Socket.io.
-- **Frontend:** React, Vite, Redux Toolkit, TailwindCSS, and Socket.io-client.
+---
 
-## Project Structure
+## 🛠 Tech Stack
 
-```
+### Frontend
+- **Framework:** React 19 (via Vite)
+- **State Management:** Redux Toolkit
+- **Styling:** TailwindCSS
+- **WebSockets:** Socket.io-client
+- **Charting:** Chart.js & react-chartjs-2
+
+### Backend
+- **Framework:** Node.js & Express.js
+- **Database:** MongoDB (Mongoose)
+- **WebSockets:** Socket.io (Real-time Market Data Simulation)
+- **Security:** JWT Authentication, bcryptjs, CORS
+
+---
+
+## 📂 Project Structure
+
+```text
 .
-├── backend/            # Express.js API, WebSockets, and Market Simulation logic
-└── frontend/           # React.js UI built with Vite
+├── backend/            # Express.js API, JWT Auth, and Market Simulation Service
+└── frontend/           # React.js SPA, Redux Store, and UI Components
 ```
 
-## Running Locally
+---
 
-You will need Node.js (v18+) and MongoDB installed locally.
+## 💻 Local Development Setup
 
-### 1. Start the Backend
-Navigate to the `backend` folder, install dependencies, and start the server:
+To run this application locally, you will need **Node.js (v18+)** and a local instance of **MongoDB** running.
+
+### 1. Start the Backend API
+Open a terminal and navigate to the backend directory:
 ```bash
 cd backend
 npm install
 npm run dev
 ```
+*The backend will start at `http://localhost:5000`.*
 
-### 2. Start the Frontend
-In a new terminal window, navigate to the `frontend` folder, install dependencies, and start the Vite development server:
+### 2. Start the Frontend UI
+Open a second terminal and navigate to the frontend directory:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The frontend will be available at [http://localhost:5173](http://localhost:5173).
+*The frontend will start at `http://localhost:5173` and automatically connect to the local backend.*
 
-## Environment Variables
+### Environment Variables (.env)
+When running locally, create `.env` files in both directories. 
 
-When running locally, you can create a `.env` file in the `backend` and `frontend` folders respectively. For production deployments, these must be added to your hosting platform's dashboard.
-
-**Backend (`backend/.env`):**
-- `MONGO_URI`: Connection string for MongoDB (e.g., MongoDB Atlas).
-- `JWT_SECRET`: Secret key for JWT authentication.
-- `FRONTEND_URL`: URL of the deployed frontend application (required to allow CORS in production).
-
-**Frontend (`frontend/.env`):**
-- `VITE_API_URL`: The full URL to the backend API (e.g., `http://localhost:5000` locally, or `https://tradesim-backend.onrender.com` in production).
+**`backend/.env`**
+```env
+MONGO_URI=mongodb://localhost:27017/stock_simulator
+JWT_SECRET=your_super_secret_jwt_key
+# FRONTEND_URL is optional locally, defaults to http://localhost:5173
+```
+**`frontend/.env`**
+```env
+# Optional locally, defaults to http://localhost:5000
+VITE_API_URL=http://localhost:5000
+```
 
 ---
 
-## Cloud Deployment (Render & Vercel)
+## ☁️ Cloud Deployment (Render & Vercel)
 
-This repository has been fully configured to deploy natively to the cloud. The frontend and backend URLs are already pre-wired into the codebase:
-- **Backend (Render):** `https://stock-trading-simulator-0tby.onrender.com`
-- **Frontend (Vercel):** `https://stock-trading-simulator-kappa.vercel.app`
+This repository is optimized for cloud deployment with zero configuration required for CORS or API URLs—they are pre-wired for the live domains!
 
-### 1. Deploy the Backend to Render
-Render natively supports Node.js Web Services.
-1. Make sure you have pushed the latest code to GitHub.
-2. Sign up for [Render](https://render.com/) and click **New +** > **Web Service**.
-3. Connect this GitHub repository.
-4. Configure the service:
+### Deploying the Backend (Render)
+1. Commit and push your code to GitHub.
+2. Go to [Render](https://render.com/) -> **New +** -> **Web Service**.
+3. Connect your repository and configure:
    - **Root Directory:** `backend`
    - **Environment:** `Node`
    - **Build Command:** `npm install`
    - **Start Command:** `npm start`
-5. Under **Environment Variables**, you only need to add:
+4. Add your **Environment Variables**:
    - `MONGO_URI`: Your MongoDB Atlas connection string.
-   - `JWT_SECRET`: A random string for secure logins.
-   *(Note: You do NOT need to set the `FRONTEND_URL` variable, as the Vercel URL is already whitelisted in the code!)*
-6. Click **Deploy**.
+   - `JWT_SECRET`: A secure random string for tokens.
+5. Click **Deploy**.
 
-### 2. Deploy the Frontend to Vercel
-Vercel handles React apps built with Vite out of the box.
-1. Make sure you have pushed the latest code to GitHub.
-2. Sign up for [Vercel](https://vercel.com/) and click **Add New Project**.
-3. Connect your GitHub repository.
-4. Expand **Build and Output Settings** and ensure:
-   - **Framework Preset:** Vite
-   - **Root Directory:** `frontend`
-5. Click **Deploy**. 
-*(Note: You do NOT need to set the `VITE_API_URL` variable, as the code automatically defaults to your Render backend URL when built for production!)*
+### Deploying the Frontend (Vercel)
+1. Go to [Vercel](https://vercel.com/) -> **Add New Project**.
+2. Connect your repository.
+3. Vercel will automatically detect the Vite framework. 
+4. Ensure the **Root Directory** is set to `frontend`.
+5. Click **Deploy**. *(React routing is automatically handled by the included `vercel.json` file).*
