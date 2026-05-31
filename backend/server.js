@@ -26,16 +26,22 @@ const app = express();
 
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://stock-trading-simulator-kappa.vercel.app",
+  "http://localhost:5173"
+].filter(Boolean);
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   },
 });
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );

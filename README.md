@@ -52,11 +52,15 @@ When running locally, you can create a `.env` file in the `backend` and `fronten
 
 ---
 
-## Cloud Deployment (Native Node & Vite)
+## Cloud Deployment (Render & Vercel)
+
+This repository has been fully configured to deploy natively to the cloud. The frontend and backend URLs are already pre-wired into the codebase:
+- **Backend (Render):** `https://stock-trading-simulator-0tby.onrender.com`
+- **Frontend (Vercel):** `https://stock-trading-simulator-kappa.vercel.app`
 
 ### 1. Deploy the Backend to Render
-Render natively supports Node.js Web Services without requiring Docker.
-1. Create a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster and get your connection string.
+Render natively supports Node.js Web Services.
+1. Make sure you have pushed the latest code to GitHub.
 2. Sign up for [Render](https://render.com/) and click **New +** > **Web Service**.
 3. Connect this GitHub repository.
 4. Configure the service:
@@ -64,23 +68,19 @@ Render natively supports Node.js Web Services without requiring Docker.
    - **Environment:** `Node`
    - **Build Command:** `npm install`
    - **Start Command:** `npm start`
-5. Under **Environment Variables**, add:
-   - `MONGO_URI` (from MongoDB Atlas)
-   - `JWT_SECRET` (generate a random string)
-   - `FRONTEND_URL` (Wait until you deploy Vercel to update this; for now, use a placeholder or your Render URL).
+5. Under **Environment Variables**, you only need to add:
+   - `MONGO_URI`: Your MongoDB Atlas connection string.
+   - `JWT_SECRET`: A random string for secure logins.
+   *(Note: You do NOT need to set the `FRONTEND_URL` variable, as the Vercel URL is already whitelisted in the code!)*
 6. Click **Deploy**.
 
 ### 2. Deploy the Frontend to Vercel
-Vercel natively supports React apps built with Vite out of the box.
-1. Sign up for [Vercel](https://vercel.com/) and click **Add New Project**.
-2. Connect your GitHub repository.
-3. Expand **Build and Output Settings** and ensure:
+Vercel handles React apps built with Vite out of the box.
+1. Make sure you have pushed the latest code to GitHub.
+2. Sign up for [Vercel](https://vercel.com/) and click **Add New Project**.
+3. Connect your GitHub repository.
+4. Expand **Build and Output Settings** and ensure:
    - **Framework Preset:** Vite
    - **Root Directory:** `frontend`
-4. Expand **Environment Variables** and add:
-   - Name: `VITE_API_URL`
-   - Value: The URL of your newly deployed Render backend (e.g., `https://tradesim-backend.onrender.com`).
-5. Click **Deploy**. Vercel will automatically build the frontend. The `vercel.json` included in the frontend folder handles the React SPA routing.
-
-### 3. Finalize CORS
-Once Vercel has deployed the frontend, copy the live URL (e.g., `https://your-app.vercel.app`), go back to your Render dashboard, and update the `FRONTEND_URL` environment variable for your backend. This ensures the backend securely accepts requests from your Vercel frontend.
+5. Click **Deploy**. 
+*(Note: You do NOT need to set the `VITE_API_URL` variable, as the code automatically defaults to your Render backend URL when built for production!)*

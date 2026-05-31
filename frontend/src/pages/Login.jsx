@@ -12,7 +12,8 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/login`, {
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://stock-trading-simulator-0tby.onrender.com" : "http://localhost:5000");
+      const res = await axios.post(`${apiUrl}/api/auth/login`, {
         email,
         password,
       });
