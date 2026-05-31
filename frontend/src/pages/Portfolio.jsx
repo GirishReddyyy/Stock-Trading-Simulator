@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 
 import { toast } from "react-toastify";
 
-import Navbar from "../components/Navbar.jsx";
-import Loader from "../components/Loader.jsx";
+import Navbar from "../components/layout/Navbar.jsx";
+import Loader from "../components/ui/Loader.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 import socket from "../services/socket.js";
 
 import { getPortfolio } from "../api/traderApi.js";
@@ -18,20 +19,20 @@ const Portfolio = () => {
 
     // LIVE PRICE UPDATE
 
-    socket.on("priceUpdate", () => {
+    const handlePriceUpdate = () => {
       loadPortfolio();
-    });
+    };
 
-    // ORDER EXECUTION
-
-    socket.on("orderExecuted", () => {
+    const handleOrderExecuted = () => {
       loadPortfolio();
-    });
+    };
+
+    socket.on("priceUpdate", handlePriceUpdate);
+    socket.on("orderExecuted", handleOrderExecuted);
 
     return () => {
-      socket.off("priceUpdate");
-
-      socket.off("orderExecuted");
+      socket.off("priceUpdate", handlePriceUpdate);
+      socket.off("orderExecuted", handleOrderExecuted);
     };
   }, []);
 
@@ -39,7 +40,7 @@ const Portfolio = () => {
     try {
       const res = await getPortfolio();
 
-      setHoldings(res.data.holdings);
+      setHoldings(res.data.holdings || []);
     } catch (error) {
       toast.error(error.response?.data?.message || "Portfolio load failed");
     } finally {
@@ -167,7 +168,7 @@ const Portfolio = () => {
 
                   return (
                     <tr
-                      key={item._id}
+                      key={item.stock._id}
                       className="
                                                             border-t
                                                         "

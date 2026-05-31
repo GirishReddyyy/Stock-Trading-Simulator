@@ -1,646 +1,150 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
 import socket from "../services/socket.js";
 
-import Loader from "../components/Loader.jsx";
-import Navbar from "../components/Navbar.jsx";
+import Loader from "../components/ui/Loader.jsx";
+import Navbar from "../components/layout/Navbar.jsx";
+import ThemeToggle from "../components/layout/ThemeToggle.jsx";
+import NotificationCenter from "../components/dashboard/NotificationCenter.jsx";
+import Leaderboard from "../components/dashboard/Leaderboard.jsx";
+import Watchlist from "../components/trading/Watchlist.jsx";
+import MarketNews from "../components/dashboard/MarketNews.jsx";
+import OrderBook from "../components/trading/OrderBook.jsx";
 
-import TradeForm from "../components/TradeForm.jsx";
-import LimitOrderForm from "../components/LimitOrderForm.jsx";
-
-import Watchlist from "../components/Watchlist.jsx";
-import MarketNews from "../components/MarketNews.jsx";
-import Leaderboard from "../components/Leaderboard.jsx";
-import NotificationCenter from "../components/NotificationCenter.jsx";
-import ThemeToggle from "../components/ThemeToggle.jsx";
-import EmptyState from "../components/EmptyState.jsx";
-import OrderBook from "../components/OrderBook.jsx";
-import StockModal from "../components/StockModal.jsx";
-
-import {
-  getDashboard,
-  getMarketStocks,
-  getOrders,
-  cancelOrder
-} from "../api/traderApi.js";
+// Extracted Components
+import DashboardStats from "../components/dashboard/DashboardStats.jsx";
+import OrderList from "../components/dashboard/OrderList.jsx";
+import { getDashboard, getMarketStocks, getOrders, cancelOrder } from "../api/traderApi.js";
 
 const Home = () => {
-
-  const [dashboard,
-    setDashboard] =
-    useState(null);
-
-  const [stocks,
-    setStocks] =
-    useState([]);
-
-  const [orders,
-    setOrders] =
-    useState([]);
-
-  const [loading,
-    setLoading] =
-    useState(true);
-
-  const [search,
-    setSearch] =
-    useState("");
-
-  const [selectedStock,
-    setSelectedStock] =
-    useState(null);
+  const [dashboard, setDashboard] = useState(null);
+  const [stocks, setStocks] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-    Promise.all([
-      loadDashboard(),
-      loadStocks(),
-      loadOrders()
-    ]).finally(
-      () =>
-        setLoading(false)
+    Promise.all([loadDashboard(), loadStocks(), loadOrders()]).finally(() =>
+      setLoading(false)
     );
 
-    socket.on(
-      "priceUpdate",
-      (
-        updatedStock
-      ) => {
+    const handlePriceUpdate = (updatedStock) => {
+      setStocks((prev) =>
+        prev.map((stock) =>
+          stock._id === updatedStock.stockId
+            ? { ...stock, currentPrice: updatedStock.currentPrice }
+            : stock
+        )
+      );
+    };
 
-        setStocks(
-          (prev) =>
-            prev.map(
-              (
-                stock
-              ) =>
-                stock._id ===
-                updatedStock.stockId
-                  ? {
-                      ...stock,
-                      currentPrice:
-                        updatedStock.currentPrice
-                    }
-                  : stock
-            )
-        );
-      }
-    );
+    const handleOrderExecuted = (data) => {
+      toast.success(`${data.type} ${data.stock} executed @ ₹${data.price}`);
+      loadDashboard();
+      loadOrders();
+    };
 
-    socket.on(
-      "orderExecuted",
-      (
-        data
-      ) => {
-
-        toast.success(
-          `${data.type} ${data.stock} executed @ ₹${data.price}`
-        );
-
-        loadDashboard();
-        loadOrders();
-      }
-    );
+    socket.on("priceUpdate", handlePriceUpdate);
+    socket.on("orderExecuted", handleOrderExecuted);
 
     return () => {
-
-      socket.off(
-        "priceUpdate"
-      );
-
-      socket.off(
-        "orderExecuted"
-      );
+      socket.off("priceUpdate", handlePriceUpdate);
+      socket.off("orderExecuted", handleOrderExecuted);
     };
-
   }, []);
 
-  const loadDashboard =
-    async () => {
+  const loadDashboard = async () => {
+    try {
+      const res = await getDashboard();
+      setDashboard(res.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Dashboard load failed");
+    }
+  };
 
-      try {
+  const loadStocks = async () => {
+    try {
+      const res = await getMarketStocks();
+      setStocks(res.data.stocks || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Market load failed");
+    }
+  };
 
-        const res =
-          await getDashboard();
+  const loadOrders = async () => {
+    try {
+      const res = await getOrders();
+      setOrders(res.data.orders || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Orders load failed");
+    }
+  };
 
-        setDashboard(
-          res.data
-        );
+  const handleCancel = async (id) => {
+    try {
+      await cancelOrder(id);
+      toast.info("Order cancelled");
+      loadOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Cancel failed");
+    }
+  };
 
-      } catch (
-        error
-      ) {
-
-        toast.error(
-          error.response?.data?.message ||
-          "Dashboard load failed"
-        );
-      }
-    };
-
-  const loadStocks =
-    async () => {
-
-      try {
-
-        const res =
-          await getMarketStocks();
-
-        setStocks(
-          res.data.stocks
-        );
-
-      } catch (
-        error
-      ) {
-
-        toast.error(
-          error.response?.data?.message ||
-          "Market load failed"
-        );
-      }
-    };
-
-  const loadOrders =
-    async () => {
-
-      try {
-
-        const res =
-          await getOrders();
-
-        setOrders(
-          res.data.orders
-        );
-
-      } catch (
-        error
-      ) {
-
-        toast.error(
-          error.response?.data?.message ||
-          "Orders load failed"
-        );
-      }
-    };
-
-  const handleCancel =
-    async (
-      id
-    ) => {
-
-      try {
-
-        await cancelOrder(
-          id
-        );
-
-        toast.info(
-          "Order cancelled"
-        );
-
-        loadOrders();
-
-      } catch (
-        error
-      ) {
-
-        toast.error(
-          error.response?.data?.message ||
-          "Cancel failed"
-        );
-      }
-    };
-
-  const filteredStocks =
-    stocks.filter(
-      (stock) =>
-        stock.symbol
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        stock.companyName
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-    );
 
   if (loading) {
-
     return (
-
-      <div className="min-h-screen bg-slate-100">
-
+      <div className="min-h-screen">
         <Navbar />
-
         <Loader />
-
       </div>
     );
   }
 
   return (
-
-    <div className="min-h-screen bg-slate-100">
-
+    <div className="min-h-screen relative">
+      {/* Dynamic Background Pattern */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMTcwLCA1OSLCAyNTUsIDAuMDUpIi8+PC9zdmc+')] opacity-50 z-0 pointer-events-none"></div>
+      
       <Navbar />
 
-      <div className="p-6">
-
-        <div
-          className="
-            flex
-            justify-end
-            mb-4
-          "
-        >
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
+              Dashboard Overview
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
+              Manage your portfolio and execute trades
+            </p>
+          </div>
           <ThemeToggle />
         </div>
 
         <NotificationCenter />
-
-        <Leaderboard />
-
-        <Watchlist
-          stocks={stocks}
-        />
-
-        <MarketNews />
-
-        <h1
-          className="
-            text-4xl
-            font-bold
-            text-slate-800
-            mb-6
-          "
-        >
-          Stock Trading Simulator
-        </h1>
-
-        {dashboard && (
-
-          <div
-            className="
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              lg:grid-cols-3
-              gap-5
-              mb-8
-            "
-          >
-
-            <DashboardCard
-              title="Balance"
-              value={dashboard.balance}
-            />
-
-            <DashboardCard
-              title="Portfolio Value"
-              value={dashboard.portfolioValue}
-            />
-
-            <DashboardCard
-              title="Investment"
-              value={dashboard.totalInvestment}
-            />
-
-            <DashboardCard
-              title="Profit / Loss"
-              value={dashboard.totalProfitLoss}
-              profitLoss
-            />
-
-            <DashboardCard
-              title="Holdings"
-              value={dashboard.holdingsCount}
-              noCurrency
-            />
-
-            <DashboardCard
-              title="Pending Orders"
-              value={dashboard.pendingOrders}
-              noCurrency
-            />
-
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="lg:col-span-2 space-y-8">
+            <DashboardStats dashboard={dashboard} />
+            <Watchlist stocks={stocks} />
           </div>
-        )}
-
-        <h2
-          className="
-            text-2xl
-            font-semibold
-            mb-4
-          "
-        >
-          Live Market
-        </h2>
-
-        <div className="mb-5">
-
-          <input
-            type="text"
-            placeholder="Search stock..."
-            value={search}
-            onChange={(e)=>
-              setSearch(
-                e.target.value
-              )
-            }
-            className="
-              w-full
-              md:w-96
-              border
-              rounded-lg
-              px-4
-              py-2
-              bg-white
-            "
-          />
-
+          <div className="space-y-8">
+            <Leaderboard />
+            <MarketNews />
+          </div>
         </div>
 
-        {filteredStocks.length === 0 ? (
+        <div className="my-12 border-t border-slate-200 dark:border-slate-800"></div>
 
-          <EmptyState
-            title="No Stocks"
-            subtitle="Try another search"
-          />
-
-        ) : (
-
-          <div
-            className="
-              grid
-              grid-cols-1
-              lg:grid-cols-2
-              gap-5
-            "
-          >
-
-            {filteredStocks.map(
-              (stock) => (
-
-                <div
-                  key={stock._id}
-                  className="
-                    bg-white
-                    rounded-xl
-                    shadow-md
-                    p-5
-                  "
-                >
-
-                  <div
-                    className="
-                      flex
-                      justify-between
-                      items-center
-                    "
-                  >
-
-                    <div>
-
-                      <h3
-                        className="
-                          text-xl
-                          font-bold
-                        "
-                      >
-                        {stock.symbol}
-                      </h3>
-
-                      <p className="text-gray-500">
-                        {stock.companyName}
-                      </p>
-
-                    </div>
-
-                    <h3
-                      className="
-                        text-2xl
-                        text-green-600
-                        font-semibold
-                      "
-                    >
-                      ₹
-                      {stock.currentPrice}
-                    </h3>
-
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setSelectedStock(
-                        stock
-                      )
-                    }
-                    className="
-                      mt-3
-                      text-sm
-                      text-blue-600
-                    "
-                  >
-                    View Details
-                  </button>
-
-                  <div className="mt-4">
-
-                    <TradeForm
-                      stock={stock}
-                      refreshDashboard={
-                        loadDashboard
-                      }
-                    />
-
-                  </div>
-
-                  <div className="mt-4">
-
-                    <LimitOrderForm
-                      stock={stock}
-                      refreshOrders={
-                        loadOrders
-                      }
-                    />
-
-                  </div>
-
-                </div>
-              )
-            )}
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Your Orders</h2>
+            <OrderList orders={orders} handleCancel={handleCancel} />
           </div>
-        )}
-
-        <div className="my-10 border-t"></div>
-
-        <h2
-          className="
-            text-2xl
-            font-semibold
-            mb-4
-          "
-        >
-          Orders
-        </h2>
-
-        {orders.length === 0 ? (
-
-          <EmptyState
-            title="No Orders"
-            subtitle="Place your first trade"
-          />
-
-        ) : (
-
-          <div className="space-y-4">
-
-            {orders.map(
-              (order) => (
-
-                <div
-                  key={order._id}
-                  className="
-                    bg-white
-                    rounded-xl
-                    shadow
-                    p-5
-                  "
-                >
-
-                  <div
-                    className="
-                      flex
-                      justify-between
-                    "
-                  >
-
-                    <div>
-
-                      <h3 className="font-bold">
-                        {order.stock?.symbol}
-                      </h3>
-
-                      <p className="text-gray-500">
-                        {order.orderType}
-                      </p>
-
-                    </div>
-
-                    <span>
-                      {order.status}
-                    </span>
-
-                  </div>
-
-                  <p className="mt-2">
-                    Qty:
-                    {order.quantity}
-                  </p>
-
-                  <p>
-                    Limit:
-                    ₹
-                    {order.limitPrice}
-                  </p>
-
-                  {order.status ===
-                    "PENDING" && (
-
-                    <button
-                      onClick={() =>
-                        handleCancel(
-                          order._id
-                        )
-                      }
-                      className="
-                        mt-3
-                        bg-red-500
-                        text-white
-                        px-4
-                        py-2
-                        rounded-lg
-                      "
-                    >
-                      Cancel
-                    </button>
-                  )}
-
-                </div>
-              )
-            )}
-
+          <div>
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">Market Order Book</h2>
+            <OrderBook />
           </div>
-        )}
-
-        <OrderBook />
-
-        <StockModal
-          stock={selectedStock}
-          onClose={() =>
-            setSelectedStock(
-              null
-            )
-          }
-        />
-
-      </div>
-
-    </div>
-  );
-};
-
-const DashboardCard = ({
-  title,
-  value,
-  profitLoss,
-  noCurrency
-}) => {
-
-  const isNegative =
-    profitLoss &&
-    value < 0;
-
-  return (
-
-    <div
-      className="
-        bg-white
-        rounded-xl
-        shadow-md
-        p-5
-      "
-    >
-
-      <p className="text-gray-500">
-        {title}
-      </p>
-
-      <h2
-        className={`
-          text-2xl
-          font-bold
-          mt-2
-          ${
-            profitLoss
-              ? isNegative
-                ? "text-red-600"
-                : "text-green-600"
-              : "text-slate-800"
-          }
-        `}
-      >
-        {
-          noCurrency
-            ? value
-            : `₹${value}`
-        }
-      </h2>
-
+        </div>
+      </main>
     </div>
   );
 };

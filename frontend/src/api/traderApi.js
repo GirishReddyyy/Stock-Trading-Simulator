@@ -1,28 +1,4 @@
-import axios from "axios";
-
-const API =
-    axios.create({
-        baseURL:
-            "http://localhost:5000/api"
-    });
-
-API.interceptors.request.use(
-    (config) => {
-
-        const token =
-            localStorage.getItem(
-                "token"
-            );
-
-        if (token) {
-
-            config.headers.Authorization =
-                `Bearer ${token}`;
-        }
-
-        return config;
-    }
-);
+import API from "./axios.js";
 
 /* AUTH */
 
@@ -30,6 +6,13 @@ export const login =
     (data) =>
         API.post(
             "/auth/login",
+            data
+        );
+
+export const updateProfile =
+    (data) =>
+        API.put(
+            "/auth/me",
             data
         );
 
@@ -110,6 +93,12 @@ export const getAnalytics =
     () =>
         API.get(
             "/trader/analytics"
+        );
+
+export const getExternalStock =
+    (symbol) =>
+        API.get(
+            `/trader/stock/${symbol}`
         );
 
 export default API;

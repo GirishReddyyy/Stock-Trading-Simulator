@@ -7,6 +7,13 @@ export const placeOrder = async (req, res) => {
   try {
     const { stockId, quantity, limitPrice, orderType } = req.body;
 
+    if (!stockId || !quantity || quantity <= 0 || !limitPrice || limitPrice <= 0 || !orderType) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid stock ID, positive quantity, limit price, and order type required",
+      });
+    }
+
     const stock = await Stock.findById(stockId);
 
     if (!stock) {

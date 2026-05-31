@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import Navbar from "../components/Navbar.jsx";
+import Navbar from "../components/layout/Navbar.jsx";
 
 import { addStock, getAdminStocks, deleteStock } from "../api/adminApi.js";
 

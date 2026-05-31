@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { ToastContainer } from "react-toastify";
-
-import "react-toastify/dist/ReactToastify.css";
-
 import Home from "./pages/Home.jsx";
 
 import Login from "./pages/Login.jsx";
 
+import Register from "./pages/Register.jsx";
+
 import Portfolio from "./pages/Portfolio.jsx";
+
+import Market from "./pages/Market.jsx";
 
 import Transactions from "./pages/Transactions.jsx";
 
@@ -18,17 +18,23 @@ import Analytics from "./pages/Analytics.jsx";
 
 import Profile from "./pages/Profile.jsx";
 
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-
-import PublicRoute from "./components/PublicRoute.jsx";
+import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
+import PublicRoute from "./components/layout/PublicRoute.jsx";
 
 
 const App = () => {
   return (
     <BrowserRouter>
-      <ToastContainer />
-
       <Routes>
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
         <Route
           path="/login"
           element={
@@ -43,6 +49,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/market"
+          element={
+            <ProtectedRoute>
+              <Market />
             </ProtectedRoute>
           }
         />

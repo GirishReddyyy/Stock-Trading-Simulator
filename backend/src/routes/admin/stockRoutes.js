@@ -17,34 +17,34 @@ const router = express.Router();
  * @desc    Create a new stock
  * @access  Private/Admin
  */
-router.post("/stocks", protect, authorize("admin"), createStock);
+router.post("/", protect, authorize("admin"), createStock);
 
 /**
  * @route   GET /api/admin/stocks
  * @desc    Get all stocks
  * @access  Private/Admin
  */
-router.get("/stocks", protect, authorize("admin"), getAllStocks);
+router.get("/", protect, authorize("admin"), getAllStocks);
 
 /**
  * @route   GET /api/admin/stocks/:id
  * @desc    Get a single stock by ID
  * @access  Private/Admin
  */
-router.get("/stocks/:id", protect, authorize("admin"), getSingleStock);
+router.get("/:id", protect, authorize("admin"), getSingleStock);
 
 /**
  * @route   PUT /api/admin/stocks/:id
  * @desc    Update a stock by ID
  * @access  Private/Admin
  */
-router.put("/stocks/:id", protect, authorize("admin"), updateStock);
+router.put("/:id", protect, authorize("admin"), updateStock);
 
 /**
  * @route   DELETE /api/admin/stocks/:id
  * @desc    Deactivate a stock by ID (soft delete)
  * @access  Private/Admin
  */
-router.delete("/stocks/:id", protect, authorize("admin"), deactivateStock);
+router.delete("/:id", protect, authorize("admin"), deactivateStock);
 
 export default router;

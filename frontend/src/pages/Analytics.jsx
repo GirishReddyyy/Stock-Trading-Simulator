@@ -4,8 +4,8 @@ import { Pie } from "react-chartjs-2";
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-import Navbar from "../components/Navbar.jsx";
-
+import Navbar from "../components/layout/Navbar.jsx";
+import Loader from "../components/ui/Loader.jsx";
 import { getPortfolio } from "../api/traderApi.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -21,25 +21,26 @@ const Analytics = () => {
     try {
       const res = await getPortfolio();
 
-      setPortfolio(res.data.holdings);
+      setPortfolio(res.data.holdings || []);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const labels = portfolio.map((item) => item.stock.symbol);
+  const safePortfolio = portfolio || [];
+  const labels = safePortfolio.map((item) => item.stock?.symbol || 'Unknown');
 
-  const values = portfolio.map(
-    (item) => item.stock.currentPrice * item.quantity,
+  const values = safePortfolio.map(
+    (item) => (item.stock?.currentPrice || 0) * (item.quantity || 0),
   );
 
-  const totalInvestment = portfolio.reduce(
-    (sum, item) => sum + item.averageBuyPrice * item.quantity,
+  const totalInvestment = safePortfolio.reduce(
+    (sum, item) => sum + (item.averageBuyPrice || 0) * (item.quantity || 0),
     0,
   );
 
-  const portfolioValue = portfolio.reduce(
-    (sum, item) => sum + item.stock.currentPrice * item.quantity,
+  const portfolioValue = safePortfolio.reduce(
+    (sum, item) => sum + (item.stock?.currentPrice || 0) * (item.quantity || 0),
     0,
   );
 

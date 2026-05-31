@@ -8,10 +8,10 @@ export const buyStock = async (req, res) => {
   try {
     const { stockId, quantity } = req.body;
 
-    if (!stockId || !quantity) {
+    if (!stockId || !quantity || quantity <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Stock and quantity required",
+        message: "Valid stock ID and positive quantity required",
       });
     }
 
@@ -113,6 +113,7 @@ export const getPortfolio = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      holdings: portfolio.holdings,
       portfolio,
     });
   } catch (error) {
@@ -150,10 +151,10 @@ export const sellStock = async (req, res) => {
   try {
     const { stockId, quantity } = req.body;
 
-    if (!stockId || !quantity) {
+    if (!stockId || !quantity || quantity <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Stock and quantity required",
+        message: "Valid stock ID and positive quantity required",
       });
     }
 
@@ -305,69 +306,6 @@ export const getAnalytics = async (req, res) => {
   }
 };
 
-export const placeOrder = async (req, res) => {
-  try {
-    const { stockId, quantity, limitPrice, orderType } = req.body;
-
-    if (!stockId || !quantity || !limitPrice || !orderType) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields required",
-      });
-    }
-
-    const stock = await StockModel.findById(stockId);
-
-    if (!stock || !stock.isActive) {
-      return res.status(404).json({
-        success: false,
-        message: "Stock not found",
-      });
-    }
-
-    const order = await OrderModel.create({
-      user: req.user.id,
-      stock: stockId,
-      orderType,
-      quantity,
-      limitPrice,
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Order placed successfully",
-      order,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-export const getOrders = async (req, res) => {
-  try {
-    const orders = await OrderModel.find({
-      user: req.user.id,
-    })
-      .populate("stock", "symbol companyName")
-      .sort({
-        createdAt: -1,
-      });
-
-    return res.status(200).json({
-      success: true,
-      count: orders.length,
-      orders,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 export const getDashboard = async (req, res) => {
   try {
@@ -423,6 +361,58 @@ export const getDashboard = async (req, res) => {
       pendingOrders,
 
       recentTransactions,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+import { getAlphaVantageStock } from "../../services/alphaVantageService.js";
+
+export const getExternalStock = async (req, res) => {
+  try {
+    const { symbol } = req.params;
+
+    if (!symbol) {
+      return res.status(400).json({
+        success: false,
+        message: "Symbol is required",
+      });
+    }
+
+    const upperSymbol = symbol.toUpperCase();
+
+    // Check DB first
+    let stock = await StockModel.findOne({ symbol: upperSymbol });
+
+    if (!stock) {
+      // Fetch from Alpha Vantage
+      const stockData = await getAlphaVantageStock(upperSymbol);
+      const quote = stockData["Global Quote"];
+      
+      if (!quote || !quote["01. symbol"]) {
+        return res.status(404).json({
+          success: false,
+          message: "Invalid symbol or API limit reached",
+        });
+      }
+      
+      // Save to DB
+      stock = await StockModel.create({
+        symbol: quote["01. symbol"],
+        companyName: quote["01. symbol"] + " (Live API)",
+        currentPrice: Number(quote["05. price"]),
+        marketCap: 0,
+        sector: "External",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: stock,
     });
   } catch (error) {
     return res.status(500).json({

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import Navbar from "../components/Navbar.jsx";
-import Loader from "../components/Loader.jsx";
-
-import { getTransactions } from "../api/traderApi.js";
+import Navbar from "../components/layout/Navbar.jsx";
+import Loader from "../components/ui/Loader.jsx";
 
 import TradeHistoryFilters
 from "../components/TradeHistoryFilters.jsx";
 
 import EmptyState
-from "../components/EmptyState.jsx";
+from "../components/ui/EmptyState.jsx";
+
+import { getTransactions } from "../api/traderApi.js";
 
 const Transactions = () => {
 
@@ -41,7 +41,7 @@ const Transactions = () => {
                     await getTransactions();
 
                 setTransactions(
-                    res.data.transactions
+                    res.data.transactions || []
                 );
 
             } catch (
@@ -62,7 +62,7 @@ const Transactions = () => {
         };
 
     const filtered =
-        transactions.filter(
+        (transactions || []).filter(
             (tx) => {
 
                 if (

@@ -4,11 +4,11 @@ import {
 } from "react";
 
 import socket
-    from "../services/socket.js";
+    from "../../services/socket.js";
 
 import {
     getOrders
-} from "../api/traderApi.js";
+} from "../../api/traderApi.js";
 
 const OrderBook = () => {
 
