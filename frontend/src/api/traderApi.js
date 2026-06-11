@@ -16,6 +16,13 @@ export const updateProfile =
             data
         );
 
+export const changePassword =
+    (data) =>
+        API.put(
+            "/auth/change-password",
+            data
+        );
+
 /* DASHBOARD */
 
 export const getDashboard =
@@ -99,6 +106,12 @@ export const getExternalStock =
     (symbol) =>
         API.get(
             `/trader/stock/${symbol}`
+        );
+
+export const getLeaderboard =
+    () =>
+        API.get(
+            "/trader/leaderboard"
         );
 
 export default API;

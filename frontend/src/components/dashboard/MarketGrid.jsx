@@ -12,23 +12,23 @@ const MarketGrid = ({ filteredStocks, setSelectedStock, loadDashboard, loadOrder
       {filteredStocks.map((stock) => (
         <div
           key={stock._id}
-          className="glass-panel rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 p-6 relative overflow-hidden group"
+          className="bg-pb-card rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300 p-6 relative overflow-hidden group border border-pb-border"
         >
           {/* Accent decoration */}
-          <div className="absolute top-0 left-0 w-1 h-full bg-primary/80"></div>
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-pb-accent opacity-80 group-hover:opacity-100 transition-opacity"></div>
           
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex justify-between items-start mb-8 border-b border-pb-border-divider pb-4">
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">
+              <h3 className="text-3xl font-extrabold text-pb-text tracking-tight">
                 {stock.symbol}
               </h3>
-              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1">
-                {stock.companyName}
+              <p className="text-pb-text-muted font-medium text-sm mt-1 uppercase tracking-widest">
+                {stock.companyName.replace(" (Live API)", "")}
               </p>
             </div>
 
             <div className="text-right">
-              <h3 className="text-3xl text-green-500 dark:text-green-400 font-bold tabular-nums">
+              <h3 className="text-3xl text-pb-profit font-bold tabular-nums">
                 ₹{stock.currentPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </h3>
             </div>
@@ -45,7 +45,7 @@ const MarketGrid = ({ filteredStocks, setSelectedStock, loadDashboard, loadOrder
 
           <button
             onClick={() => setSelectedStock(stock)}
-            className="mt-6 w-full py-2 rounded-xl text-sm font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20"
+            className="mt-6 w-full py-3 rounded-xl text-sm font-bold text-pb-accent hover:text-pb-accent-hover hover:bg-pb-card-hover transition-colors border border-pb-border hover:border-pb-accent/50"
           >
             View Full Details & Chart
           </button>

@@ -421,3 +421,41 @@ export const getExternalStock = async (req, res) => {
     });
   }
 };
+
+export const getLeaderboard = async (req, res) => {
+  try {
+    const portfolios = await PortfolioModel.find()
+      .populate("user", "name")
+      .populate("holdings.stock", "currentPrice");
+
+    const leaderboard = portfolios.map((portfolio) => {
+      let totalInvestment = 0;
+      let currentValue = 0;
+
+      portfolio.holdings.forEach((holding) => {
+        if (holding.stock) {
+          totalInvestment += holding.averageBuyPrice * holding.quantity;
+          currentValue += holding.stock.currentPrice * holding.quantity;
+        }
+      });
+
+      return {
+        name: portfolio.user ? portfolio.user.name : "Unknown",
+        pnl: currentValue - totalInvestment,
+        isCurrentUser: portfolio.user && req.user && portfolio.user._id.toString() === req.user.id
+      };
+    });
+
+    leaderboard.sort((a, b) => b.pnl - a.pnl);
+
+    return res.status(200).json({
+      success: true,
+      leaderboard: leaderboard.slice(0, 10),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

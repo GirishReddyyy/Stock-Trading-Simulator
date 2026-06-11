@@ -11,31 +11,33 @@ const Navbar = () => {
   };
 
   const navClass = ({ isActive }) =>
-    `px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+    `px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
       isActive
-        ? "bg-primary text-white shadow-lg shadow-primary/30"
-        : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary"
+        ? "bg-pb-accent text-pb-bg shadow-[0_4px_14px_rgba(212,163,115,0.25)]"
+        : "text-pb-text-muted hover:bg-pb-card-hover hover:text-pb-text"
     }`;
 
   return (
-    <nav className="sticky top-0 z-50 glass-panel border-b px-6 py-4 transition-colors">
+    <nav className="sticky top-0 z-50 bg-pb-surface/90 backdrop-blur-md border-b border-pb-border px-6 py-4 transition-colors shadow-sm">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         
         {/* LOGO */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent drop-shadow-sm">
-            TradeSim
+          <Link to="/" className="text-2xl font-bold text-pb-text tracking-tight">
+            Trade<span className="text-pb-accent">Sim</span>
           </Link>
-          <span className="px-2 py-1 text-xs font-semibold rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 capitalize border border-slate-200 dark:border-slate-700">
+          <span className="px-2 py-0.5 text-xs font-bold rounded-md bg-pb-card text-pb-text-sec uppercase tracking-widest border border-pb-border">
             {user?.role}
           </span>
         </div>
 
         {/* NAV LINKS */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-1">
           <NavLink to="/" className={navClass}>Dashboard</NavLink>
           <NavLink to="/market" className={navClass}>Market</NavLink>
           <NavLink to="/portfolio" className={navClass}>Portfolio</NavLink>
+          <NavLink to="/watchlist" className={navClass}>Watchlist</NavLink>
+          <NavLink to="/orders" className={navClass}>Your Orders</NavLink>
           <NavLink to="/transactions" className={navClass}>History</NavLink>
           <NavLink to="/analytics" className={navClass}>Analytics</NavLink>
           <NavLink to="/profile" className={navClass}>Profile</NavLink>
@@ -45,16 +47,16 @@ const Navbar = () => {
         </div>
 
         {/* USER + LOGOUT */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <div className="hidden sm:block text-right">
-            <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">{user?.name}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role}</p>
+            <p className="font-bold text-sm text-pb-text">{user?.name}</p>
+            <p className="text-xs text-pb-text-muted uppercase tracking-wider">{user?.role}</p>
           </div>
           <button
             onClick={logout}
-            className="bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border border-red-500/20"
+            className="text-pb-loss hover:bg-pb-loss hover:text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border border-pb-loss/30"
           >
-            Logout
+            Sign Out
           </button>
         </div>
 

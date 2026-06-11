@@ -4,7 +4,14 @@
 [![Backend Setup](https://img.shields.io/badge/Backend-Express%20%7C%20Node.js-green?logo=nodedotjs&logoColor=white)](https://stock-trading-simulator-0tby.onrender.com)
 [![Database](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)]()
 
-A full-stack, real-time web application that simulates a live stock market environment. Users can securely register, view live market data streams, and execute trades instantly. 
+A full-stack, real-time web application that simulates a live stock market environment. The application features a **Premium Private Banking / Wealth Management UI**, designed with warm walnut, earth tones, and gold accents to provide a professional and sophisticated trading experience.
+
+### 🌟 Key Features
+- **Professional UI/UX:** Cohesive design system using custom Tailwind themes (`pb-*` palette).
+- **Real-Time Trading:** Execute market and limit orders (Buy/Sell) instantly.
+- **Auto-Sell Limits:** Set target limit prices on your portfolio holdings for automated selling.
+- **Advanced Portfolio & Analytics:** Track your holdings, view historical transaction logs, and visualize P/L with dynamic charts.
+- **Live Market Data:** Simulated live WebSocket streams for realistic market fluctuation.
 
 ### 🚀 Live Demos
 - **Live Platform:** [https://stock-trading-simulator-kappa.vercel.app](https://stock-trading-simulator-kappa.vercel.app)

@@ -3,42 +3,36 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary: #aa3bff;
-  --color-primary-light: rgba(170, 59, 255, 0.1);
-}
-
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #f8fafc;
-  --border: #e2e8f0;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-}
-
-:root.dark {
-  --text: #9ca3af;
-  --text-h: #f3f4f6;
-  --bg: #0f172a;
-  --border: #1e293b;
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --color-pb-bg: #1A1410;
+  --color-pb-surface: #221A16;
+  --color-pb-card: #2B211C;
+  --color-pb-card-hover: #362A24;
+  
+  --color-pb-text: #F5EDE6;
+  --color-pb-text-sec: #D6C6B8;
+  --color-pb-text-muted: #B8A397;
+  --color-pb-text-disabled: #8C7A6E;
+  
+  --color-pb-accent: #D4A373;
+  --color-pb-accent-hover: #C98C5A;
+  --color-pb-accent-soft: #E6B17E;
+  
+  --color-pb-profit: #6BAA75;
+  --color-pb-loss: #C96A5B;
+  --color-pb-warning: #D6A85A;
+  --color-pb-info: #7FA6C9;
+  
+  --color-pb-border: #3A2D26;
+  --color-pb-border-hover: #4A3A30;
+  --color-pb-border-divider: #2F241F;
 }
 
 body {
   margin: 0;
-  color: var(--text);
-  background-color: var(--bg);
+  color: var(--color-pb-text);
+  background-color: var(--color-pb-bg);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Glassmorphism utilities */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
 }
 
 /* Base custom scrollbar */
@@ -50,9 +44,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--color-pb-border-hover);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text);
+  background: var(--color-pb-text-muted);
 }

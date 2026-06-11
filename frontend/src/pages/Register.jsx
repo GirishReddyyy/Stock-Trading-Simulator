@@ -1,6 +1,20 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+// SVG Icons
+const ShieldCheckIcon = () => (
+  <svg className="w-5 h-5 text-pb-accent inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.956 11.956 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
+const ChartMotif = () => (
+  <svg className="absolute bottom-0 left-0 w-full h-64 text-pb-border/50 pointer-events-none" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <path fill="currentColor" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,213.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+  </svg>
+);
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,77 +37,88 @@ const Register = () => {
       localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate("/");
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed");
+      toast.error(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-900">
-      {/* Dynamic Background */}
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/30 blur-[120px] mix-blend-screen pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/30 blur-[120px] mix-blend-screen pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}></div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-['Inter'] bg-pb-bg">
+      {/* Noise Texture */}
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')" }}></div>
       
-      <div className="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-md relative z-10 border border-slate-700/50">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent drop-shadow-sm mb-2">
-            TradeSim
+      {/* Radial Lighting */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-pb-accent opacity-[0.05] blur-[100px] pointer-events-none"></div>
+
+      <ChartMotif />
+      
+      <div className="relative z-10 w-full max-w-md px-6">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-pb-text tracking-tight mb-2 flex items-center justify-center gap-2">
+            Trade<span className="text-pb-accent">Sim</span>
           </h1>
-          <p className="text-slate-400 font-medium">Create your trader account</p>
+          <p className="text-pb-text-muted text-sm uppercase tracking-widest font-semibold">Wealth Management</p>
         </div>
 
-        <form onSubmit={handleRegister} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              placeholder="John Doe"
-            />
+        <div className="bg-pb-card border border-pb-border rounded-[24px] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.35)] relative">
+          <div className="flex items-center justify-center mb-8 pb-4 border-b border-pb-border-divider">
+            <ShieldCheckIcon />
+            <span className="text-pb-text font-semibold text-lg tracking-wide">Create Account</span>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              placeholder="name@example.com"
-            />
-          </div>
+          <form onSubmit={handleRegister} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-pb-text-sec uppercase tracking-wider">Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full bg-pb-surface border border-pb-border rounded-xl px-4 py-3 text-pb-text placeholder:text-pb-text-disabled hover:border-pb-border-hover focus:border-pb-accent focus:ring-[2px] focus:ring-pb-accent/20 focus:outline-none transition-all"
+                placeholder="John Doe"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-              placeholder="••••••••"
-            />
-          </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-pb-text-sec uppercase tracking-wider">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-pb-surface border border-pb-border rounded-xl px-4 py-3 text-pb-text placeholder:text-pb-text-disabled hover:border-pb-border-hover focus:border-pb-accent focus:ring-[2px] focus:ring-pb-accent/20 focus:outline-none transition-all"
+                placeholder="name@example.com"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-primary hover:from-blue-500/90 hover:to-primary/90 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/25 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Creating Account..." : "Start Trading"}
-          </button>
-        </form>
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-pb-text-sec uppercase tracking-wider">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-pb-surface border border-pb-border rounded-xl px-4 py-3 text-pb-text placeholder:text-pb-text-disabled hover:border-pb-border-hover focus:border-pb-accent focus:ring-[2px] focus:ring-pb-accent/20 focus:outline-none transition-all"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 mt-6 bg-pb-accent hover:bg-pb-accent-hover text-pb-bg font-bold rounded-xl shadow-[0_4px_14px_rgba(212,163,115,0.25)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wider"
+            >
+              {loading ? "Creating Account..." : "Start Trading"}
+            </button>
+          </form>
+        </div>
 
         <div className="mt-8 text-center">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-pb-text-muted">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:text-blue-400 font-semibold transition-colors">
-              Login here
+            <Link to="/login" className="text-pb-accent hover:text-pb-accent-hover font-semibold transition-colors">
+              Sign in here
             </Link>
           </p>
         </div>

@@ -9,6 +9,7 @@ import {
   getAnalytics,
   getDashboard,
   getExternalStock,
+  getLeaderboard,
 } from "../../controllers/trader/tradeController.js";
 
 const router = express.Router();
@@ -22,5 +23,7 @@ router.get("/analytics", protect, authorize("trader", "admin"), getAnalytics);
 router.get("/dashboard", protect, authorize("trader", "admin"), getDashboard);
 
 router.get("/stock/:symbol", protect, authorize("trader", "admin"), getExternalStock);
+
+router.get("/leaderboard", protect, getLeaderboard);
 
 export default router;

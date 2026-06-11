@@ -1,56 +1,23 @@
 import { useEffect, useState } from "react";
+import { getLeaderboard } from "../../api/traderApi.js";
+import { toast } from "react-toastify";
 
 const Leaderboard = () => {
 
-    const [leaders,
-        setLeaders] =
-        useState([]);
+    const [leaders, setLeaders] = useState([]);
 
     useEffect(() => {
-
-        const data = [
-
-            {
-                name:
-                    "Rahul",
-                pnl:
-                    45200
-            },
-
-            {
-                name:
-                    "Aman",
-                pnl:
-                    31800
-            },
-
-            {
-                name:
-                    "Sneha",
-                pnl:
-                    28900
-            },
-
-            {
-                name:
-                    "You",
-                pnl:
-                    12500
-            }
-
-        ];
-
-        data.sort(
-            (a, b) =>
-                b.pnl -
-                a.pnl
-        );
-
-        setLeaders(
-            data
-        );
-
+        loadLeaderboard();
     }, []);
+
+    const loadLeaderboard = async () => {
+        try {
+            const res = await getLeaderboard();
+            setLeaders(res.data.leaderboard || []);
+        } catch (error) {
+            toast.error("Failed to load leaderboard");
+        }
+    };
 
     return (
 
@@ -85,53 +52,19 @@ const Leaderboard = () => {
 
                             <div
                                 key={index}
-                                className="
-                                    flex
-                                    justify-between
-                                    items-center
-                                    border-b
-                                    pb-2
-                                "
+                                className={`flex justify-between items-center border-b pb-2 ${trader.isCurrentUser ? 'bg-primary/5 rounded px-2 -mx-2 pt-2' : ''}`}
                             >
-
-                                <div
-                                    className="
-                                        flex
-                                        items-center
-                                        gap-3
-                                    "
-                                >
-
-                                    <span
-                                        className="
-                                            text-lg
-                                            font-bold
-                                        "
-                                    >
-                                        #
-                                        {index + 1}
+                                <div className="flex items-center gap-3">
+                                    <span className={`text-lg font-bold ${trader.isCurrentUser ? 'text-primary' : ''}`}>
+                                        #{index + 1}
                                     </span>
-
-                                    <span>
-                                        {
-                                            trader.name
-                                        }
+                                    <span className={trader.isCurrentUser ? 'font-semibold text-primary' : ''}>
+                                        {trader.isCurrentUser ? "You" : trader.name}
                                     </span>
-
                                 </div>
-
-                                <span
-                                    className="
-                                        text-green-600
-                                        font-semibold
-                                    "
-                                >
-                                    ₹
-                                    {
-                                        trader.pnl
-                                    }
+                                <span className={`font-semibold ${trader.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    ₹{trader.pnl.toFixed(2)}
                                 </span>
-
                             </div>
                         )
                     )

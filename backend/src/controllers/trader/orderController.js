@@ -1,5 +1,7 @@
 import Order from "../../models/OrderModel.js";
 import Stock from "../../models/StockModel.js";
+import UserModel from "../../models/UserModel.js";
+import PortfolioModel from "../../models/PortfolioModel.js";
 
 // PLACE ORDER
 
@@ -21,6 +23,34 @@ export const placeOrder = async (req, res) => {
         success: false,
         message: "Stock not found",
       });
+    }
+
+    // Import models if not already imported (will add at top)
+    const user = await UserModel.findById(req.user.id);
+    let portfolio = await PortfolioModel.findOne({ user: req.user.id });
+
+    if (orderType === "BUY") {
+      const totalCost = limitPrice * quantity;
+      if (user.balance < totalCost) {
+        return res.status(400).json({ success: false, message: "Insufficient balance for this order" });
+      }
+      // Hold the balance
+      user.balance -= totalCost;
+      await user.save();
+    } else if (orderType === "SELL") {
+      if (!portfolio) {
+        return res.status(400).json({ success: false, message: "No portfolio found" });
+      }
+      const holding = portfolio.holdings.find((h) => h.stock.toString() === stockId);
+      if (!holding || holding.quantity < quantity) {
+        return res.status(400).json({ success: false, message: "Insufficient stock quantity" });
+      }
+      // Hold the stock
+      holding.quantity -= quantity;
+      if (holding.quantity === 0) {
+        portfolio.holdings = portfolio.holdings.filter((h) => h.stock.toString() !== stockId);
+      }
+      await portfolio.save();
     }
 
     const order = await Order.create({
@@ -92,8 +122,30 @@ export const cancelOrder = async (req, res) => {
     }
 
     order.status = "CANCELLED";
-
     await order.save();
+
+    // Refund
+    if (order.orderType === "BUY") {
+      const user = await UserModel.findById(req.user.id);
+      user.balance += order.limitPrice * order.quantity;
+      await user.save();
+    } else if (order.orderType === "SELL") {
+      let portfolio = await PortfolioModel.findOne({ user: req.user.id });
+      if (!portfolio) {
+        portfolio = await PortfolioModel.create({ user: req.user.id, holdings: [] });
+      }
+      const holding = portfolio.holdings.find((h) => h.stock.toString() === order.stock.toString());
+      if (holding) {
+        holding.quantity += order.quantity;
+      } else {
+        portfolio.holdings.push({
+          stock: order.stock,
+          quantity: order.quantity,
+          averageBuyPrice: 0 // Simplification since average was lost
+        });
+      }
+      await portfolio.save();
+    }
 
     res.json({
       success: true,

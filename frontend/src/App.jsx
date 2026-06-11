@@ -10,7 +10,11 @@ import Portfolio from "./pages/Portfolio.jsx";
 
 import Market from "./pages/Market.jsx";
 
+import WatchlistPage from "./pages/WatchlistPage.jsx";
+
 import Transactions from "./pages/Transactions.jsx";
+
+import Orders from "./pages/Orders.jsx";
 
 import AdminMarket from "./pages/AdminMarket.jsx";
 
@@ -72,10 +76,28 @@ const App = () => {
         />
 
         <Route
+          path="/watchlist"
+          element={
+            <ProtectedRoute>
+              <WatchlistPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/transactions"
           element={
             <ProtectedRoute>
               <Transactions />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
             </ProtectedRoute>
           }
         />
