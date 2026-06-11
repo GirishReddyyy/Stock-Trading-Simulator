@@ -83,28 +83,4 @@ JWT_SECRET=your_super_secret_jwt_key
 VITE_API_URL=http://localhost:5000
 ```
 
----
 
-## ☁️ Cloud Deployment (Render & Vercel)
-
-This repository is optimized for cloud deployment with zero configuration required for CORS or API URLs—they are pre-wired for the live domains!
-
-### Deploying the Backend (Render)
-1. Commit and push your code to GitHub.
-2. Go to [Render](https://render.com/) -> **New +** -> **Web Service**.
-3. Connect your repository and configure:
-   - **Root Directory:** `backend`
-   - **Environment:** `Node`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-4. Add your **Environment Variables**:
-   - `MONGO_URI`: Your MongoDB Atlas connection string.
-   - `JWT_SECRET`: A secure random string for tokens.
-5. Click **Deploy**.
-
-### Deploying the Frontend (Vercel)
-1. Go to [Vercel](https://vercel.com/) -> **Add New Project**.
-2. Connect your repository.
-3. Vercel will automatically detect the Vite framework. 
-4. Ensure the **Root Directory** is set to `frontend`.
-5. Click **Deploy**. *(React routing is automatically handled by the included `vercel.json` file).*
